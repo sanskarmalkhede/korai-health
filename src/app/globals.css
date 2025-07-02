@@ -1,16 +1,5 @@
 @import "tailwindcss";
 
-@theme {
-  --color-cream: #f5f2eb;
-  --color-sage-green: #8db582;
-  --color-sage-light: #a5c49a;
-  --color-sage-dark: #6fa066;
-  --color-brown-light: #a08779;
-  --color-brown-dark: #6b5b52;
-  --color-text-dark: #2d2926;
-  --color-text-light: #f5f2eb;
-}
-
 :root {
   /* Color palette from user's image */
   --cream: #f5f2eb;
@@ -28,6 +17,43 @@ body {
   background: linear-gradient(135deg, var(--cream) 0%, var(--sage-light) 50%, var(--brown-light) 100%);
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
+}
+
+/* Custom color utilities */
+.text-sage-green {
+  color: var(--sage-green);
+}
+
+.bg-sage-green {
+  background-color: var(--sage-green);
+}
+
+.border-sage-green {
+  border-color: var(--sage-green);
+}
+
+.from-sage-green {
+  --tw-gradient-from: var(--sage-green);
+  --tw-gradient-to: rgb(141 181 130 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-sage-dark {
+  --tw-gradient-to: var(--sage-dark);
+}
+
+.border-sage-green\/20 {
+  border-color: rgba(141, 181, 130, 0.2);
+}
+
+.from-sage-green\/20 {
+  --tw-gradient-from: rgba(141, 181, 130, 0.2);
+  --tw-gradient-to: rgba(141, 181, 130, 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-sage-dark\/20 {
+  --tw-gradient-to: rgba(111, 160, 102, 0.2);
 }
 
 /* Custom scrollbar */
@@ -132,4 +158,18 @@ body {
     var(--cream) 36%
   );
   background-size: 1000px 100%;
+}
+
+/* Custom Background Beams animation */
+@keyframes aurora {
+  from {
+    background-position: 50% 50%, 50% 50%;
+  }
+  to {
+    background-position: 350% 50%, 350% 50%;
+  }
+}
+
+.background-beams {
+  animation: aurora 60s linear infinite;
 }

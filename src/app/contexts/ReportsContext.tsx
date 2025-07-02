@@ -65,11 +65,23 @@ function reportsReducer(state: ReportsState, action: ReportsAction): ReportsStat
   }
 }
 
+interface TrendDataPoint {
+  reportIndex: number;
+  date: string;
+  fileName: string;
+  cholesterol?: number;
+  bloodSugar?: number;
+  hemoglobin?: number;
+  wbc?: number;
+  ldl?: number;
+  hdl?: number;
+}
+
 const ReportsContext = createContext<{
   state: ReportsState;
   dispatch: React.Dispatch<ReportsAction>;
   addReport: (fileName: string, parameters: HealthParameter[], extractedText?: string, note?: string) => void;
-  getTrendData: () => any[];
+  getTrendData: () => TrendDataPoint[];
   getCurrentReport: () => HealthReport | null;
 } | null>(null);
 
@@ -102,7 +114,7 @@ export function ReportsProvider({ children }: { children: ReactNode }) {
     );
 
     const trendData = sortedReports.map((report, index) => {
-      const dataPoint: any = {
+      const dataPoint: TrendDataPoint = {
         reportIndex: index + 1,
         date: new Date(report.uploadDate).toLocaleDateString(),
         fileName: report.fileName.length > 15 ? report.fileName.substring(0, 15) + '...' : report.fileName,

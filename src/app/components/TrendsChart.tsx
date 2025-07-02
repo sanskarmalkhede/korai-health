@@ -39,12 +39,20 @@ export function TrendsChart() {
     );
   }
 
-  const customTooltip = ({ active, payload, label }: any) => {
+  const customTooltip = ({ active, payload, label }: {
+    active?: boolean;
+    payload?: Array<{
+      color: string;
+      name: string;
+      value: number;
+    }>;
+    label?: string | number;
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-cream/95 backdrop-blur-sm border border-sage-green/20 rounded-xl p-4 shadow-lg">
           <h4 className="font-semibold text-text-dark mb-2">{`Report: ${label}`}</h4>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index: number) => (
             <div key={index} className="flex items-center space-x-2 mb-1">
               <div 
                 className="w-3 h-3 rounded-full"
@@ -143,7 +151,7 @@ export function TrendsChart() {
       {/* Legend with color indicators */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {Object.entries(chartConfig).map(([key, config]) => {
-          const hasData = data.some(d => d[key] !== undefined);
+          const hasData = data.some(d => d[key as keyof typeof d] !== undefined);
           if (!hasData) return null;
           
           return (

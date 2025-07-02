@@ -3,7 +3,9 @@ import sharp from 'sharp';
 import path from 'path';
 
 export const maxDuration = 60; // 60 seconds for Vercel
-export const maxSize = 10 * 1024 * 1024; // 10MB
+
+// File size limit constant (not exported as it's not a valid Next.js API route export)
+const maxSize = 10 * 1024 * 1024; // 10MB
 
 interface HealthParameter {
   parameter: string;
@@ -188,8 +190,9 @@ async function extractTextFromImage(buffer: Buffer, fileName: string): Promise<s
           console.log('OCR completed successfully with text length:', result.data.text.length);
           return result.data.text;
         }
-      } catch (e: any) {
-        console.log('Basic OCR attempt failed:', e?.message || 'Unknown error');
+      } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+        console.log('Basic OCR attempt failed:', errorMessage);
       }
     } else {
       console.log('Image too large for demo OCR, using intelligent fallback');
@@ -212,15 +215,15 @@ async function extractTextFromImage(buffer: Buffer, fileName: string): Promise<s
     const variance = (seed % 100) / 100;
     
     // Create different data based on whether it seems like a health report
-    let hemoglobin = isHealthReport ? (12.5 + variance * 4).toFixed(1) : (13.0 + variance * 3).toFixed(1);
-    let rbc = isHealthReport ? (4.8 + variance).toFixed(1) : (4.5 + variance * 1.2).toFixed(1);
-    let wbc = isHealthReport ? Math.round(7000 + variance * 4000) : Math.round(6000 + variance * 5000);
-    let pcv = isHealthReport ? (45 + variance * 15).toFixed(1) : (42 + variance * 10).toFixed(1);
-    let platelets = isHealthReport ? (2.2 + variance).toFixed(1) : (2.0 + variance * 1.5).toFixed(1);
+    const hemoglobin = isHealthReport ? (12.5 + variance * 4).toFixed(1) : (13.0 + variance * 3).toFixed(1);
+    const rbc = isHealthReport ? (4.8 + variance).toFixed(1) : (4.5 + variance * 1.2).toFixed(1);
+    const wbc = isHealthReport ? Math.round(7000 + variance * 4000) : Math.round(6000 + variance * 5000);
+    const pcv = isHealthReport ? (45 + variance * 15).toFixed(1) : (42 + variance * 10).toFixed(1);
+    const platelets = isHealthReport ? (2.2 + variance).toFixed(1) : (2.0 + variance * 1.5).toFixed(1);
     let cholesterol = isHealthReport ? Math.round(170 + variance * 40) : Math.round(180 + variance * 30);
     let glucose = isHealthReport ? Math.round(85 + variance * 25) : Math.round(90 + variance * 20);
     let ldl = isHealthReport ? Math.round(95 + variance * 30) : Math.round(100 + variance * 25);
-    let hdl = isHealthReport ? Math.round(50 + variance * 20) : Math.round(45 + variance * 15);
+    const hdl = isHealthReport ? Math.round(50 + variance * 20) : Math.round(45 + variance * 15);
 
     // High glucose if the filename contains "diabetes" or "glucose"
     if (fileName.toLowerCase().includes('diabetes') || fileName.toLowerCase().includes('glucose')) {

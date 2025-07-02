@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   DocumentArrowUpIcon, 
-  ChartBarIcon, 
-  ClipboardDocumentListIcon,
+  ChartBarIcon,
   EyeIcon,
   HeartIcon,
   ShieldCheckIcon,
