@@ -110,18 +110,16 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
           >
             <motion.h1 
-              className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-text-dark via-sage-green to-brown-light bg-clip-text text-transparent"
+              className="text-5xl md:text-7xl font-bold mb-8 text-gray-800"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              Health Report
-              <br />
-              <span className="text-sage-green">Analytics</span>
+              Korai Health
             </motion.h1>
             
             <motion.p 
-              className="text-xl md:text-2xl text-text-dark/80 mb-12 leading-relaxed"
+              className="text-xl md:text-2xl text-gray-700 mb-12 leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -139,17 +137,17 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             <div className="aceternity-card rounded-3xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-text-dark mb-4 text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
                 Upload Your Lab Report
               </h2>
-              <p className="text-text-dark/70 text-center mb-6">
+              <p className="text-gray-600 text-center mb-6">
                 Drag and drop your lab report or click to browse. Supports PDF and image formats.
               </p>
               
               {uploading ? (
                 <div className="flex flex-col items-center space-y-4">
                   <LoadingSpinner />
-                  <p className="text-sage-green font-medium">Processing your report...</p>
+                  <p className="text-green-600 font-medium">Processing your report...</p>
                 </div>
               ) : (
                 <FileUpload onFileUpload={handleFileUpload} />
@@ -166,14 +164,14 @@ export default function HomePage() {
               >
                 <div className="flex items-center justify-between">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-sage-green">{state.reports.length}</div>
-                    <div className="text-sm text-text-dark/70">Reports Analyzed</div>
+                    <div className="text-2xl font-bold text-green-600">{state.reports.length}</div>
+                    <div className="text-sm text-gray-600">Reports Analyzed</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-sage-green">
+                    <div className="text-2xl font-bold text-green-600">
                       {state.reports.reduce((acc, report) => acc + report.parameters.length, 0)}
                     </div>
-                    <div className="text-sm text-text-dark/70">Health Parameters</div>
+                    <div className="text-sm text-gray-600">Health Parameters</div>
                   </div>
                   <motion.button
                     onClick={() => router.push('/results')}
@@ -197,10 +195,10 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <h2 className="text-4xl font-bold text-text-dark mb-4">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">
               Powerful Health Analytics
             </h2>
-            <p className="text-xl text-text-dark/70 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Discover insights from your lab reports with our comprehensive analysis tools
             </p>
           </motion.div>
@@ -222,10 +220,10 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
           >
-            <h3 className="text-3xl font-bold text-text-dark mb-4">
+            <h3 className="text-3xl font-bold text-gray-800 mb-4">
               Ready to Analyze Your Health Data?
             </h3>
-            <p className="text-xl text-text-dark/70 mb-8">
+            <p className="text-xl text-gray-600 mb-8">
               Upload your first lab report and discover actionable health insights in seconds.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
