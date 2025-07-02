@@ -1,26 +1,135 @@
 @import "tailwindcss";
 
+@theme {
+  --color-cream: #f5f2eb;
+  --color-sage-green: #8db582;
+  --color-sage-light: #a5c49a;
+  --color-sage-dark: #6fa066;
+  --color-brown-light: #a08779;
+  --color-brown-dark: #6b5b52;
+  --color-text-dark: #2d2926;
+  --color-text-light: #f5f2eb;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Color palette from user's image */
+  --cream: #f5f2eb;
+  --sage-green: #8db582;
+  --sage-light: #a5c49a;
+  --sage-dark: #6fa066;
+  --brown-light: #a08779;
+  --brown-dark: #6b5b52;
+  --text-dark: #2d2926;
+  --text-light: #f5f2eb;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-dark);
+  background: linear-gradient(135deg, var(--cream) 0%, var(--sage-light) 50%, var(--brown-light) 100%);
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sage-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sage-dark);
+}
+
+/* Aceternity UI custom styles */
+.aceternity-card {
+  background: rgba(245, 242, 235, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(141, 181, 130, 0.2);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 0 20px rgba(141, 181, 130, 0.1);
+}
+
+.aceternity-button-primary {
+  background: linear-gradient(135deg, var(--sage-green), var(--sage-dark));
+  color: var(--text-light);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.aceternity-button-primary:hover {
+  background: linear-gradient(135deg, var(--sage-dark), var(--brown-light));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(141, 181, 130, 0.3);
+}
+
+.aceternity-button-secondary {
+  background: var(--brown-light);
+  color: var(--text-light);
+  border: 1px solid var(--brown-dark);
+}
+
+.aceternity-button-secondary:hover {
+  background: var(--brown-dark);
+  transform: translateY(-1px);
+}
+
+/* Status indicators */
+.status-normal {
+  background: var(--sage-green);
+  color: var(--text-light);
+}
+
+.status-high {
+  background: #dc2626;
+  color: white;
+}
+
+.status-low {
+  background: #f59e0b;
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    var(--cream) 4%,
+    var(--sage-light) 25%,
+    var(--cream) 36%
+  );
+  background-size: 1000px 100%;
 }
