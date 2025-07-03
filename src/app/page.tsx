@@ -9,7 +9,8 @@ import {
   EyeIcon,
   HeartIcon,
   ShieldCheckIcon,
-  SparklesIcon
+  SparklesIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { FileUpload } from './components/FileUpload';
 import { LoadingSpinner } from '@/app/components/LoadingSpinner';
@@ -17,8 +18,16 @@ import { useReports } from './contexts/ReportsContext';
 import { HoverEffect } from './components/ui/card-hover-effect';
 import { BackgroundBeams } from './components/ui/background-beams';
 
+interface UploadDetails {
+  details: string;
+  suggestion: string;
+  extractedText?: string;
+}
+
 export default function HomePage() {
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadDetails, setUploadDetails] = useState<UploadDetails | null>(null);
   const { state, addReport } = useReports();
   const router = useRouter();
 
@@ -57,6 +66,9 @@ export default function HomePage() {
 
   const handleFileUpload = async (file: File) => {
     setUploading(true);
+    setUploadError(null);
+    setUploadDetails(null);
+    
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -66,12 +78,28 @@ export default function HomePage() {
         body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process file');
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned an invalid response. Please try again.');
       }
 
       const result = await response.json();
+
+      if (!response.ok) {
+        // Handle different types of errors with detailed feedback
+        if (response.status === 422 && result.error === 'No health parameters detected') {
+          setUploadError(result.error);
+          setUploadDetails({
+            details: result.details,
+            suggestion: result.suggestion,
+            extractedText: result.extractedText
+          });
+          return;
+        } else {
+          throw new Error(result.error || 'Failed to process file');
+        }
+      }
       
       // Add the report to context before navigation
       if (result.success && result.parameters) {
@@ -84,13 +112,15 @@ export default function HomePage() {
         );
         
         console.log('Report added to context:', file.name);
+        
+        // Navigate to results page after successful upload
+        router.push('/results');
       }
       
-      // Navigate to results page after successful upload
-      router.push('/results');
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Failed to process the file. Please try again.');
+      setUploadError(error instanceof Error ? error.message : 'Failed to process the file. Please try again.');
+      setUploadDetails(null);
     } finally {
       setUploading(false);
     }
@@ -110,7 +140,7 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
           >
             <motion.h1 
-              className="text-5xl md:text-7xl font-bold mb-8 text-gray-800"
+              className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-green-600 to-teal-600 bg-clip-text text-transparent"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -150,7 +180,80 @@ export default function HomePage() {
                   <p className="text-green-600 font-medium">Processing your report...</p>
                 </div>
               ) : (
-                <FileUpload onFileUpload={handleFileUpload} />
+                <>
+                  <FileUpload onFileUpload={handleFileUpload} />
+                  
+                  {/* Detailed Error Display */}
+                  {uploadError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-6 p-6 bg-orange-50 border border-orange-200 rounded-xl"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <ExclamationTriangleIcon className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
+                        <div className="flex-1">
+                          <h4 className="text-lg font-semibold text-orange-800 mb-2">
+                            OCR Processing Results
+                          </h4>
+                          <p className="text-orange-700 mb-4">
+                            {uploadError}
+                          </p>
+                          
+                          {uploadDetails && (
+                            <div className="space-y-4">
+                              <div>
+                                <h5 className="font-medium text-orange-800 mb-2">What we found:</h5>
+                                <p className="text-sm text-orange-700 mb-2">
+                                  {uploadDetails.details}
+                                </p>
+                              </div>
+                              
+                              {uploadDetails.extractedText && (
+                                <div>
+                                  <h5 className="font-medium text-orange-800 mb-2">
+                                    Extracted Text Preview:
+                                  </h5>
+                                  <div className="bg-orange-100 p-3 rounded-lg border max-h-32 overflow-y-auto">
+                                    <pre className="text-xs text-orange-800 whitespace-pre-wrap font-mono">
+                                      {uploadDetails.extractedText}
+                                    </pre>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <h5 className="font-medium text-blue-800 mb-2">💡 Suggestions:</h5>
+                                <p className="text-sm text-blue-700 mb-3">
+                                  {uploadDetails.suggestion}
+                                </p>
+                                <ul className="text-sm text-blue-700 space-y-1">
+                                  <li>• Ensure the image is clear and well-lit</li>
+                                  <li>• Make sure text is not rotated or skewed</li>
+                                  <li>• Try uploading a higher resolution image</li>
+                                  <li>• Check that the report contains standard health parameters (cholesterol, glucose, hemoglobin, etc.)</li>
+                                </ul>
+                              </div>
+
+                              
+                              <div className="flex justify-center mt-4">
+                                <button
+                                  onClick={() => {
+                                    setUploadError(null);
+                                    setUploadDetails(null);
+                                  }}
+                                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                                >
+                                  Try Another File
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </>
               )}
             </div>
 

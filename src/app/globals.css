@@ -101,7 +101,7 @@ body {
   background: var(--brown-light);
   color: var(--text-light);
   border: 1px solid var(--brown-dark);
-}
+  }
 
 .aceternity-button-secondary:hover {
   background: var(--brown-dark);
