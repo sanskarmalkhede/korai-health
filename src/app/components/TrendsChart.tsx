@@ -50,7 +50,7 @@ export function TrendsChart() {
   }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-cream/95 backdrop-blur-sm border border-sage-green/20 rounded-xl p-4 shadow-lg">
+        <div className="bg-cream/95 backdrop-blur-sm border border-sage-green/20 rounded-xl p-4 shadow-lg max-w-sm">
           <h4 className="font-semibold text-text-dark mb-2">{`Report: ${label}`}</h4>
           {payload.map((entry, index: number) => (
             <div key={index} className="flex items-center space-x-2 mb-1">
@@ -69,14 +69,44 @@ export function TrendsChart() {
     return null;
   };
 
+  // Enhanced chart configuration with all parameters
   const chartConfig = {
-    cholesterol: { color: '#8db582', name: 'Total Cholesterol' },
-    bloodSugar: { color: '#6fa066', name: 'Blood Glucose' },
-    hemoglobin: { color: '#a5c49a', name: 'Hemoglobin' },
-    wbc: { color: '#a08779', name: 'WBC Count' },
-    ldl: { color: '#dc2626', name: 'LDL Cholesterol' },
-    hdl: { color: '#059669', name: 'HDL Cholesterol' },
+    // Primary Blood Parameters
+    hemoglobin: { color: '#dc2626', name: 'Hemoglobin (g/dL)' },
+    rbcCount: { color: '#ea580c', name: 'RBC Count (mill/cumm)' },
+    wbcCount: { color: '#d97706', name: 'WBC Count (thou/mm3)' },
+    pcv: { color: '#ca8a04', name: 'PCV (%)' },
+    plateletCount: { color: '#65a30d', name: 'Platelet Count (thou/mm3)' },
+    
+    // Blood Indices
+    mcv: { color: '#059669', name: 'MCV (fL)' },
+    mch: { color: '#0891b2', name: 'MCH (pg)' },
+    mchc: { color: '#0284c7', name: 'MCHC (g/dL)' },
+    rdw: { color: '#3b82f6', name: 'RDW (%)' },
+    
+    // Differential Count
+    neutrophils: { color: '#6366f1', name: 'Neutrophils (%)' },
+    lymphocytes: { color: '#8b5cf6', name: 'Lymphocytes (%)' },
+    monocytes: { color: '#a855f7', name: 'Monocytes (%)' },
+    eosinophils: { color: '#c084fc', name: 'Eosinophils (%)' },
+    basophils: { color: '#d946ef', name: 'Basophils (%)' },
+    
+    // Lipid Profile
+    totalCholesterol: { color: '#ec4899', name: 'Total Cholesterol (mg/dL)' },
+    ldlCholesterol: { color: '#f43f5e', name: 'LDL Cholesterol (mg/dL)' },
+    hdlCholesterol: { color: '#10b981', name: 'HDL Cholesterol (mg/dL)' },
+    triglycerides: { color: '#f59e0b', name: 'Triglycerides (mg/dL)' },
+    
+    // Other Tests
+    bloodGlucose: { color: '#ef4444', name: 'Blood Glucose (mg/dL)' },
+    cReactiveProtein: { color: '#f97316', name: 'C-Reactive Protein (mg/dL)' },
+    esr: { color: '#84cc16', name: 'ESR (mm/hr)' },
   };
+
+  // Get available parameters from the data
+  const availableParams = Object.keys(chartConfig).filter(key => 
+    data.some(d => d[key as keyof typeof d] !== undefined && d[key as keyof typeof d] !== null)
+  );
 
   return (
     <div className="w-full">
@@ -85,13 +115,13 @@ export function TrendsChart() {
           Health Parameter Trends
         </h3>
         <p className="text-text-dark/70 text-sm">
-          Tracking {data.length} reports over time
+          Tracking {data.length} reports with {availableParams.length} different parameters
         </p>
       </div>
 
       <div className="bg-gradient-to-br from-cream/50 to-sage-light/20 rounded-xl p-4 mb-4">
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <ResponsiveContainer width="100%" height={500}>
+          <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
             <CartesianGrid 
               strokeDasharray="3 3" 
               stroke="#8db582" 
@@ -103,6 +133,9 @@ export function TrendsChart() {
               fontSize={12}
               fontWeight={500}
               tick={{ fill: '#2d2926' }}
+              angle={-45}
+              textAnchor="end"
+              height={100}
             />
             <YAxis 
               stroke="#2d2926"
@@ -114,58 +147,168 @@ export function TrendsChart() {
             <Legend 
               wrapperStyle={{ 
                 paddingTop: '20px',
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: '500'
               }}
             />
             
-            {Object.entries(chartConfig).map(([key, config]) => (
-              <Line
-                key={key}
-                type="monotone"
-                dataKey={key}
-                stroke={config.color}
-                strokeWidth={3}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                dot={{ 
-                  fill: config.color, 
-                  stroke: '#fff', 
-                  strokeWidth: 2, 
-                  r: 6 
-                }}
-                activeDot={{ 
-                  r: 8, 
-                  stroke: config.color, 
-                  strokeWidth: 2,
-                  fill: '#fff'
-                }}
-                name={config.name}
-                connectNulls={false}
-              />
-            ))}
+            {availableParams.map((key) => {
+              const config = chartConfig[key as keyof typeof chartConfig];
+              return (
+                <Line
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={config.color}
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  dot={{ 
+                    fill: config.color, 
+                    stroke: '#fff', 
+                    strokeWidth: 1, 
+                    r: 4 
+                  }}
+                  activeDot={{ 
+                    r: 6, 
+                    stroke: config.color, 
+                    strokeWidth: 2,
+                    fill: '#fff'
+                  }}
+                  name={config.name}
+                  connectNulls={false}
+                />
+              );
+            })}
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Legend with color indicators */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {Object.entries(chartConfig).map(([key, config]) => {
-          const hasData = data.some(d => d[key as keyof typeof d] !== undefined);
-          if (!hasData) return null;
-          
-          return (
-            <div key={key} className="flex items-center space-x-2">
-              <div 
-                className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                style={{ backgroundColor: config.color }}
-              />
-              <span className="text-sm font-medium text-text-dark">
-                {config.name}
-              </span>
-            </div>
-          );
-        })}
+      {/* Enhanced legend with categories */}
+      <div className="space-y-4">
+        {availableParams.length > 0 && (
+          <>
+            {/* Blood Parameters */}
+            {['hemoglobin', 'rbcCount', 'wbcCount', 'pcv', 'plateletCount'].some(param => availableParams.includes(param)) && (
+              <div>
+                <h4 className="text-sm font-semibold text-text-dark mb-2">Complete Blood Count (CBC)</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+                  {['hemoglobin', 'rbcCount', 'wbcCount', 'pcv', 'plateletCount'].map((key) => {
+                    if (!availableParams.includes(key)) return null;
+                    const config = chartConfig[key as keyof typeof chartConfig];
+                    return (
+                      <div key={key} className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white shadow-sm"
+                          style={{ backgroundColor: config.color }}
+                        />
+                        <span className="text-xs font-medium text-text-dark">
+                          {config.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Blood Indices */}
+            {['mcv', 'mch', 'mchc', 'rdw'].some(param => availableParams.includes(param)) && (
+              <div>
+                <h4 className="text-sm font-semibold text-text-dark mb-2">Blood Indices</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {['mcv', 'mch', 'mchc', 'rdw'].map((key) => {
+                    if (!availableParams.includes(key)) return null;
+                    const config = chartConfig[key as keyof typeof chartConfig];
+                    return (
+                      <div key={key} className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white shadow-sm"
+                          style={{ backgroundColor: config.color }}
+                        />
+                        <span className="text-xs font-medium text-text-dark">
+                          {config.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Differential Count */}
+            {['neutrophils', 'lymphocytes', 'monocytes', 'eosinophils', 'basophils'].some(param => availableParams.includes(param)) && (
+              <div>
+                <h4 className="text-sm font-semibold text-text-dark mb-2">Differential Count</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+                  {['neutrophils', 'lymphocytes', 'monocytes', 'eosinophils', 'basophils'].map((key) => {
+                    if (!availableParams.includes(key)) return null;
+                    const config = chartConfig[key as keyof typeof chartConfig];
+                    return (
+                      <div key={key} className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white shadow-sm"
+                          style={{ backgroundColor: config.color }}
+                        />
+                        <span className="text-xs font-medium text-text-dark">
+                          {config.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Lipid Profile */}
+            {['totalCholesterol', 'ldlCholesterol', 'hdlCholesterol', 'triglycerides'].some(param => availableParams.includes(param)) && (
+              <div>
+                <h4 className="text-sm font-semibold text-text-dark mb-2">Lipid Profile</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {['totalCholesterol', 'ldlCholesterol', 'hdlCholesterol', 'triglycerides'].map((key) => {
+                    if (!availableParams.includes(key)) return null;
+                    const config = chartConfig[key as keyof typeof chartConfig];
+                    return (
+                      <div key={key} className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white shadow-sm"
+                          style={{ backgroundColor: config.color }}
+                        />
+                        <span className="text-xs font-medium text-text-dark">
+                          {config.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Other Tests */}
+            {['bloodGlucose', 'cReactiveProtein', 'esr'].some(param => availableParams.includes(param)) && (
+              <div>
+                <h4 className="text-sm font-semibold text-text-dark mb-2">Other Tests</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {['bloodGlucose', 'cReactiveProtein', 'esr'].map((key) => {
+                    if (!availableParams.includes(key)) return null;
+                    const config = chartConfig[key as keyof typeof chartConfig];
+                    return (
+                      <div key={key} className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white shadow-sm"
+                          style={{ backgroundColor: config.color }}
+                        />
+                        <span className="text-xs font-medium text-text-dark">
+                          {config.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

@@ -69,12 +69,37 @@ interface TrendDataPoint {
   reportIndex: number;
   date: string;
   fileName: string;
-  cholesterol?: number;
-  bloodSugar?: number;
+  
+  // Primary Blood Parameters
   hemoglobin?: number;
-  wbc?: number;
-  ldl?: number;
-  hdl?: number;
+  rbcCount?: number;
+  wbcCount?: number;
+  pcv?: number;
+  plateletCount?: number;
+  
+  // Blood Indices
+  mcv?: number;
+  mch?: number;
+  mchc?: number;
+  rdw?: number;
+  
+  // Differential Count
+  neutrophils?: number;
+  lymphocytes?: number;
+  monocytes?: number;
+  eosinophils?: number;
+  basophils?: number;
+  
+  // Lipid Profile
+  totalCholesterol?: number;
+  ldlCholesterol?: number;
+  hdlCholesterol?: number;
+  triglycerides?: number;
+  
+  // Other Tests
+  bloodGlucose?: number;
+  cReactiveProtein?: number;
+  esr?: number;
 }
 
 const ReportsContext = createContext<{
@@ -120,29 +145,69 @@ export function ReportsProvider({ children }: { children: ReactNode }) {
         fileName: report.fileName.length > 15 ? report.fileName.substring(0, 15) + '...' : report.fileName,
       };
 
-      // Extract numeric values for trending
+      // Extract numeric values for trending - Enhanced parameter mapping
       report.parameters.forEach(param => {
         const numericValue = parseFloat(param.value);
         if (!isNaN(numericValue)) {
-          switch (param.parameter.toLowerCase()) {
-            case 'total cholesterol':
-              dataPoint.cholesterol = numericValue;
-              break;
-            case 'blood glucose':
-              dataPoint.bloodSugar = numericValue;
-              break;
-            case 'hemoglobin':
-              dataPoint.hemoglobin = numericValue;
-              break;
-            case 'white blood cell count':
-              dataPoint.wbc = numericValue;
-              break;
-            case 'ldl cholesterol':
-              dataPoint.ldl = numericValue;
-              break;
-            case 'hdl cholesterol':
-              dataPoint.hdl = numericValue;
-              break;
+          const paramName = param.parameter.toLowerCase();
+          
+          // Primary Blood Parameters
+          if (paramName.includes('hemoglobin') || paramName === 'hb') {
+            dataPoint.hemoglobin = numericValue;
+          } else if (paramName.includes('rbc') || paramName.includes('red blood cell')) {
+            dataPoint.rbcCount = numericValue;
+          } else if (paramName.includes('wbc') || paramName.includes('white blood cell') || 
+                     paramName.includes('tlc') || paramName.includes('leukocyte')) {
+            dataPoint.wbcCount = numericValue;
+          } else if (paramName.includes('pcv') || paramName.includes('packed cell volume')) {
+            dataPoint.pcv = numericValue;
+          } else if (paramName.includes('platelet')) {
+            dataPoint.plateletCount = numericValue;
+          }
+          
+          // Blood Indices
+          else if (paramName === 'mcv' || paramName.includes('mean corpuscular volume')) {
+            dataPoint.mcv = numericValue;
+          } else if (paramName === 'mch' && !paramName.includes('mchc')) {
+            dataPoint.mch = numericValue;
+          } else if (paramName === 'mchc' || paramName.includes('mean corpuscular hemoglobin concentration')) {
+            dataPoint.mchc = numericValue;
+          } else if (paramName === 'rdw' || paramName.includes('red cell distribution width')) {
+            dataPoint.rdw = numericValue;
+          }
+          
+          // Differential Count
+          else if (paramName.includes('neutrophil')) {
+            dataPoint.neutrophils = numericValue;
+          } else if (paramName.includes('lymphocyte')) {
+            dataPoint.lymphocytes = numericValue;
+          } else if (paramName.includes('monocyte')) {
+            dataPoint.monocytes = numericValue;
+          } else if (paramName.includes('eosinophil')) {
+            dataPoint.eosinophils = numericValue;
+          } else if (paramName.includes('basophil')) {
+            dataPoint.basophils = numericValue;
+          }
+          
+          // Lipid Profile
+          else if (paramName.includes('total cholesterol') || 
+                   (paramName.includes('cholesterol') && !paramName.includes('ldl') && !paramName.includes('hdl'))) {
+            dataPoint.totalCholesterol = numericValue;
+          } else if (paramName.includes('ldl')) {
+            dataPoint.ldlCholesterol = numericValue;
+          } else if (paramName.includes('hdl')) {
+            dataPoint.hdlCholesterol = numericValue;
+          } else if (paramName.includes('triglyceride')) {
+            dataPoint.triglycerides = numericValue;
+          }
+          
+          // Other Tests
+          else if (paramName.includes('glucose') || paramName.includes('sugar')) {
+            dataPoint.bloodGlucose = numericValue;
+          } else if (paramName.includes('c-reactive protein') || paramName.includes('crp')) {
+            dataPoint.cReactiveProtein = numericValue;
+          } else if (paramName.includes('esr') || paramName.includes('erythrocyte sedimentation')) {
+            dataPoint.esr = numericValue;
           }
         }
       });
